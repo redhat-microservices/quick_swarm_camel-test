@@ -123,7 +123,7 @@ Api responsible to talk with the OpenShift platform in order to retrieve the pod
 
 To check that a replication controller exists, you will design such JUnit Test
 
-```
+```java
 @Test
 public void testAppProvisionsRunningPods() throws Exception {
     // assert that a Replication Controller exists
@@ -133,7 +133,7 @@ public void testAppProvisionsRunningPods() throws Exception {
 
 and to test a service deployed
 
-```
+```java
 @Test
 public void testHttpEndpoint() throws Exception {
     // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)
