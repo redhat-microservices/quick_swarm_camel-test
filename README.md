@@ -118,8 +118,8 @@ Use this URL to display the response message from the REST service:
 
 ## Testing
 
-To test the service and also the pod deployed, we have created an integration test using the [Arquillian Testing framework](http://arquillian.org/) and a Kubernetes Client
-Api responsible to talk with the OpenShift platform in order to retrieve the pods, services, replication controllers and to perform some assertions.
+To test the service and also the pod deployed, we have created an integration test using the [Arquillian Testing framework](http://arquillian.org/) and the [Kubernetes Client
+Api](https://github.com/fabric8io/fabric8/tree/master/components/fabric8-arquillian) responsible to talk with the OpenShift platform in order to retrieve the pods, services, replication controllers, ... and to perform some assertions.
 
 To check that a replication controller exists, you will design such JUnit Test
 
@@ -131,7 +131,7 @@ public void testAppProvisionsRunningPods() throws Exception {
 }
 ```
 
-and to test a service deployed
+and to test a HTTP endpoint/service deployed
 
 ```java
 @Test
