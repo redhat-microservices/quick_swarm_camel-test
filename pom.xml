@@ -61,21 +61,21 @@
 
         <camel.version>2.17.3</camel.version>
         <fabric8.version>2.2.148</fabric8.version>
-        <wildfly-swarm.version>1.0.0.Final</wildfly-swarm.version>
+        <wildfly-swarm.version>2016.9</wildfly-swarm.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Swarm -->
+            <!-- WildFly Swarm BOM -->
             <dependency>
                 <groupId>org.wildfly.swarm</groupId>
-                <artifactId>bom</artifactId>
+                <artifactId>bom-all</artifactId>
                 <version>${wildfly-swarm.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
 
-            <!-- import fabric8 platform bom first -->
+            <!-- Fabric8 bom -->
             <dependency>
                 <groupId>io.fabric8</groupId>
                 <artifactId>fabric8-project-bom-with-platform-deps</artifactId>
@@ -120,6 +120,7 @@
             <artifactId>camel-other</artifactId>
         </dependency>
 
+        <!-- Java REST Spec -->
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
             <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
@@ -172,7 +173,7 @@
                 </executions>
                 <configuration>
                     <debug>${debug.port}</debug>
-                    <mainClass>io.fabric8.quickstarts.swarm.MainApp</mainClass>
+                    <mainClass>io.obsidian.quickstart.swarm.MainApp</mainClass>
                 </configuration>
             </plugin>
 

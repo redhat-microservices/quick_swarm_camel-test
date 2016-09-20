@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 import static io.fabric8.kubernetes.assertions.Assertions.assertThat;
 
 @RunWith(Arquillian.class)
-public class KubernetesIntegrationKT {
+public class OpenshiftIntegrationKT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KubernetesIntegrationKT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenshiftIntegrationKT.class);
 
     @ArquillianResource
     KubernetesClient client;

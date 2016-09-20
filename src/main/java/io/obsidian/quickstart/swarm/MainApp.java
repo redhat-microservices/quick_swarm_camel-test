@@ -13,7 +13,7 @@
  *  implied.  See the License for the specific language governing
  *  permissions and limitations under the License.
  */
-package io.fabric8.quickstarts.swarm;
+package io.obsidian.quickstart.swarm;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.wildfly.swarm.container.Container;
@@ -29,7 +29,7 @@ public class MainApp {
 		container.start();
 
 		WARArchive deployment = ShrinkWrap.create(WARArchive.class);
-		deployment.addPackage("io.fabric8.quickstarts.swarm.route");
+		deployment.addPackage("io.obsidian.quickstart.swarm.route");
 		deployment.staticContent();
 
 		container.deploy(deployment);

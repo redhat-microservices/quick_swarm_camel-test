@@ -124,6 +124,10 @@ Api](https://github.com/fabric8io/fabric8/tree/master/components/fabric8-arquill
 To check that a replication controller exists, you will design such JUnit Test
 
 ```java
+
+@ArquillianResource
+KubernetesClient client;
+    
 @Test
 public void testAppProvisionsRunningPods() throws Exception {
     // assert that a Replication Controller exists
