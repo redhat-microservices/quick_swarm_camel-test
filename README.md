@@ -73,13 +73,25 @@ curl -X GET http://localhost:8080/jmx
 curl -d "{\"type\":\"read\",\"mbean\":\"java.lang:type=Memory\",\"attribute\":\"HeapMemoryUsage\",\"path\":\"used\"}" http://localhost:8080/jmx/ && echo ""
 ```
 
-## Running the example in fabric8
+## Running the example on OpenShift
 
-It is assumed a Kubernetes platform is already running with or without OpenShift. If not, you can find details how to [get started](http://fabric8.io/guide/getStarted/index.html).
+It is assumed that an OpenShift platform is already running. If not, you can find details how to setup the infrastructure hereafter and more information here 
+[get started](https://github.com/jimmidyson/minishift).
+
+* Launch minishift
+
+```
+minishift delete
+minishift start --deploy-registry=true --deploy-router=true --memory=4048 --vm-driver="xhyve"
+minishift docker-env
+eval $(minishift docker-env)
+```
+
+Remark : Don't forget to be authenticated with the OpenShift Server using the command `oc login`
 
 The example can be built and deployed using a single goal:
 
-    mvn -Pf8-local-deploy
+    mvn -Popenshift-local-deploy
 
 When the example runs in fabric8, you can use the OpenShift client tool to inspect the status
 
@@ -91,7 +103,7 @@ Then find the name of the pod that runs this quickstart, and output the logs fro
 
     oc logs <name of pod>
 
-You can also use the fabric8 web console to manage the running pods, and view logs and much more.
+You can also use the OpenShift web console to manage the running pods, and view logs and much more.
 
 ## Access services using a web browser
 
@@ -99,12 +111,38 @@ You can use any browser to perform a HTTP GET. This allows you to very easily te
 
 Notice: As it depends on your OpenShift setup, the hostname (route) might vary. Verify with oc get routes which hostname is valid for you.
 
-Use this URL to display response message from the REST service:
+Use this URL to display the response message from the REST service:
 
-    http://swarm-camel-rest-default.vagrant.f8/service/say/charles
+    export serviceURL=$(minishift service swarm-camel)
+    http://$serviceURL/service/say/charles
 
-where `vagrant.f8` is your Kubernetes domain and `default`, the namespace of the project
+## Testing
 
-## More details
+To test the service and also the pod deployed, we have created an integration test using the [Arquillian Testing framework](http://arquillian.org/) and a Kubernetes Client
+Api responsible to talk with the OpenShift platform in order to retrieve the pods, services, replication controllers and to perform some assertions.
 
-You can find more details about running this quickstart on the website. This also includes instructions how to change the Docker image user and registry.
+To check that a replication controller exists, you will design such JUnit Test
+
+```
+@Test
+public void testAppProvisionsRunningPods() throws Exception {
+    // assert that a Replication Controller exists
+    assertThat(client).replicationController("swarm-camel");
+}
+```
+
+and to test a service deployed
+
+```
+@Test
+public void testHttpEndpoint() throws Exception {
+    // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)
+    assertThat(client).replicas("swarm-camel").pods().isPodReadyForPeriod();
+
+    // Fech the External Address of the Service
+    String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
+```
+
+To run the Junit tests, simply exexute this maven command
+
+    mvn test -Dtest=KubernetesIntegrationKT
