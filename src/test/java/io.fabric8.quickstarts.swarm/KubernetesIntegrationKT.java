@@ -27,11 +27,15 @@ public class KubernetesIntegrationKT {
 
     @Test
     public void testAppProvisionsRunningPods() throws Exception {
+        // assert that a Replication Controller exists
         assertThat(client).replicationController("swarm-camel");
     }
 
     @Test
     public void testHttpEndpoint() throws Exception {
+
+        // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)
+        assertThat(client).replicas("swarm-camel").pods().isPodReadyForPeriod();
 
         String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
         String req = serviceURL + "/service/say/charles";
