@@ -113,8 +113,8 @@ Notice: As it depends on your OpenShift setup, the hostname (route) might vary. 
 
 Use this URL to display the response message from the REST service:
 
-    export serviceURL=$(minishift service swarm-camel)
-    http://$serviceURL/service/say/charles
+    export serviceURL=$(minishift service swarm-camel --url=true)
+    curl $serviceURL/service/say/charles
 
 ## Testing
 
