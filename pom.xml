@@ -145,12 +145,12 @@
             <version>${arquillian-cube.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.arquillian.cube</groupId>
             <artifactId>arquillian-cube-openshift</artifactId>
             <version>${arquillian-cube.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <!-- Still Required for AssertThat(KubernetesClient) & KubernetesHelper -->
         <dependency>
             <groupId>io.fabric8</groupId>

@@ -1,13 +1,16 @@
 package io.obsidian.quickstart.swarm;
 
 import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.descriptor.api.jbossdeployment11.SystemDependencyType;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -25,6 +28,12 @@ public class OpenshiftIntegrationKT {
 
     OkHttpClient httpClient = new OkHttpClient();
 
+    @Before
+    public void setUp() {
+        System.setProperty("namespace.use.existing","default");
+        System.setProperty("namespace.cleanup.enabled","false");
+        System.setProperty(Config.KUBERNETES_NAMESPACE_SYSTEM_PROPERTY,"default");
+    }
     @Test
     public void testAppProvisionsRunningPods() throws Exception {
         // assert that a Replication Controller exists
