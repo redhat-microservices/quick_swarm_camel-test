@@ -1,0 +1,125 @@
+{
+  "apiVersion" : "v1",
+  "kind" : "Template",
+  "metadata" : {
+    "annotations" : {
+      "fabric8.swarm-camel/summary" : "Camel REST Service running in a standalone Java Swarm Container",
+      "description" : "# Swarm Camel REST Quickstart\n\n## Introduction\n\nThis quickstart uses WildFly Swarm as Java container and the Apache Camel Integration Framework to expose a RESTfull endpoint registered within the Undertow server.\nThis example uses the REST fluent DSL to define a service which provides one operation\n\n- GET api/say/{id}       - Say Hello to the user name\n\nThe Camel modules deployed within the WildFly Swarm container are defined within the pom.xml definition file. To expose the JMX MBeans using a HTTP endpoint, we have also\npackaged to this quickstart project, the [jolokia](https://jolokia.org/reference/html/protocol.html) technology which allows to query your MBeans using JSon over HTTP.\n\nTo configure jolokia, we must declare a Wildfly [fraction](https://wildfly-swarm.gitbooks.io/wildfly-swarm-users-guide/content/v/6a00bb344527303f784f541ee2fb93abec4a1ef4/fraction_authoring.html) which is the composable piece of the platform\nin order to deploy and customize the module (example: to define the URL path to access the Jolokia JMX resource).\n\nThe static resources (index.html file containing the link to the swagger.json doc file) like also the package containing the Camel route are defined within the WAR Archive which is created using ShrinkWrap and deployed after the Container has been started. \n\nThe Camel context is created using the CDI Weld Container which is reponsible to scan the classes to discover the @ApplicationScope annotation like also the the @CamelContext annotation which is managed as a cdi extension.\n\nThe MainApp class is bootstrapped by the WildFly Swarm container when we launch it.\n\n```\npublic static void main(String[] args) throws Exception {\n\tContainer container = new Container();\n    container.fraction(new JolokiaFraction(\"/jmx\"));\n    container.start();\n\n    WARArchive deployment = ShrinkWrap.create(WARArchive.class);\n    deployment.addPackage(\"io.fabric8.quickstarts.swarm.route\");\n    deployment.staticContent();\n\n    container.deploy(deployment);\n```\n\n## Build\n\nYou will need to compile this example first:\n\n    mvn install\n\n## Run\n\nTo run the example type\n\n    mvn wildfly-swarm:run\n\nThe rest service can be accessed from the following url\n\n    curl http://localhost:8080/service/say/{name}\n<http://localhost:8080/service/say/{name}>\n\nFor example to say Hello for the name `charles`\n\n    curl http://localhost:8080/service/say/charles\n<http://localhost:8080/service/say/charles>\n\nThe rest services provides Swagger API which can be accessed from the following url\n\n    curl http://localhost:8080/swagger.json\n<http://localhost:8080/swagger.json>\n\nTo stop the example hit <kbd>ctrl</kbd>+<kbd>c</kbd>\n\n## Jolokia & JMX\n\nWe have registered the Jolokia fraction in order to access the JMX operations or attributes using the JSon HTTP Servlet Bridge offered by the\n[jolokia](https://jolokia.org/reference/html/protocol.html) project.\n\nHere are some curl request that we can use to grab JVM data\n\n```\ncurl -X GET http://localhost:8080/jmx\ncurl -d \"{\\\"type\\\":\\\"read\\\",\\\"mbean\\\":\\\"java.lang:type=Memory\\\",\\\"attribute\\\":\\\"HeapMemoryUsage\\\",\\\"path\\\":\\\"used\\\"}\" http://localhost:8080/jmx/ && echo \"\"\n```\n\n## Running the example on OpenShift\n\nIt is assumed that an OpenShift platform is already running. If not, you can find details how to setup the infrastructure hereafter and more information here \n[get started](https://github.com/jimmidyson/minishift).\n\n* Launch minishift\n\n```\nminishift delete\nminishift start --deploy-registry=true --deploy-router=true --memory=4048 --vm-driver=\"xhyve\"\nminishift docker-env\neval $(minishift docker-env)\n```\n\nRemark : Don't forget to be authenticated with the OpenShift Server using the command `oc login`\n\nThe example can be built and deployed using a single goal:\n\n    mvn -Popenshift-local-deploy\n\nWhen the example runs in fabric8, you can use the OpenShift client tool to inspect the status\n\nTo list all the running pods:\n\n    oc get pods\n\nThen find the name of the pod that runs this quickstart, and output the logs from the running pods with:\n\n    oc logs <name of pod>\n\nYou can also use the OpenShift web console to manage the running pods, and view logs and much more.\n\n## Access services using a web browser\n\nYou can use any browser to perform a HTTP GET. This allows you to very easily test a few of the RESTful services we defined:\n\nNotice: As it depends on your OpenShift setup, the hostname (route) might vary. Verify with oc get routes which hostname is valid for you.\n\nUse this URL to display the response message from the REST service:\n\n    export serviceURL=$(minishift service swarm-camel)\n    http://$serviceURL/service/say/charles\n\n## Testing\n\nTo test the service and also the pod deployed, we have created an integration test using the [Arquillian Testing framework](http://arquillian.org/) and the [Kubernetes Client\nApi](https://github.com/fabric8io/fabric8/tree/master/components/fabric8-arquillian) responsible to talk with the OpenShift platform in order to retrieve the pods, services, replication controllers, ... and to perform some assertions.\n\nTo check that a replication controller exists, you will design such JUnit Test\n\n```java\n\n@ArquillianResource\nKubernetesClient client;\n    \n@Test\npublic void testAppProvisionsRunningPods() throws Exception {\n    // assert that a Replication Controller exists\n    assertThat(client).replicationController(\"swarm-camel\");\n}\n```\n\nand to test a HTTP endpoint/service deployed\n\n```java\n@Test\npublic void testHttpEndpoint() throws Exception {\n    // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)\n    assertThat(client).replicas(\"swarm-camel\").pods().isPodReadyForPeriod();\n\n    // Fech the External Address of the Service\n    String serviceURL = KubernetesHelper.getServiceURL(client,\"swarm-camel\",KubernetesHelper.DEFAULT_NAMESPACE,\"http\",true);\n```\n\nTo run the Junit tests, simply exexute this maven command\n\n    mvn test -Dtest=KubernetesIntegrationKT\n"
+    },
+    "labels" : { },
+    "name" : "swarm-camel"
+  },
+  "objects" : [ {
+    "apiVersion" : "v1",
+    "kind" : "Service",
+    "metadata" : {
+      "annotations" : { },
+      "labels" : {
+        "provider" : "fabric8",
+        "project" : "swarm-camel",
+        "version" : "1.0-SNAPSHOT",
+        "group" : "quickstarts"
+      },
+      "name" : "swarm-camel"
+    },
+    "spec" : {
+      "deprecatedPublicIPs" : [ ],
+      "externalIPs" : [ ],
+      "ports" : [ {
+        "port" : 8080,
+        "protocol" : "TCP",
+        "targetPort" : 8080
+      } ],
+      "selector" : {
+        "project" : "swarm-camel",
+        "provider" : "fabric8",
+        "group" : "quickstarts"
+      },
+      "type" : "LoadBalancer"
+    }
+  }, {
+    "apiVersion" : "v1",
+    "kind" : "ReplicationController",
+    "metadata" : {
+      "annotations" : {
+        "fabric8.io/git-branch" : "master",
+        "fabric8.io/git-commit" : "2c83e4e7884c03c829b259f4f3d1c9f111307d22"
+      },
+      "labels" : {
+        "provider" : "fabric8",
+        "project" : "swarm-camel",
+        "version" : "1.0-SNAPSHOT",
+        "group" : "quickstarts"
+      },
+      "name" : "swarm-camel"
+    },
+    "spec" : {
+      "replicas" : 1,
+      "selector" : {
+        "provider" : "fabric8",
+        "project" : "swarm-camel",
+        "version" : "1.0-SNAPSHOT",
+        "group" : "quickstarts"
+      },
+      "template" : {
+        "metadata" : {
+          "annotations" : { },
+          "labels" : {
+            "provider" : "fabric8",
+            "project" : "swarm-camel",
+            "version" : "1.0-SNAPSHOT",
+            "group" : "quickstarts"
+          }
+        },
+        "spec" : {
+          "containers" : [ {
+            "args" : [ ],
+            "command" : [ ],
+            "env" : [ {
+              "name" : "KUBERNETES_NAMESPACE",
+              "valueFrom" : {
+                "fieldRef" : {
+                  "fieldPath" : "metadata.namespace"
+                }
+              }
+            } ],
+            "image" : "fabric8/swarm-camel:1.0-SNAPSHOT",
+            "name" : "swarm-camel",
+            "ports" : [ {
+              "containerPort" : 8080,
+              "name" : "http"
+            }, {
+              "containerPort" : 8778,
+              "name" : "jolokia"
+            } ],
+            "readinessProbe" : {
+              "httpGet" : {
+                "httpHeaders" : [ ],
+                "path" : "/jmx",
+                "port" : 8080
+              },
+              "initialDelaySeconds" : 5,
+              "timeoutSeconds" : 30
+            },
+            "resources" : {
+              "limits" : {
+                "cpu" : "0",
+                "memory" : "0"
+              },
+              "requests" : {
+                "cpu" : "0",
+                "memory" : "0"
+              }
+            },
+            "securityContext" : { },
+            "volumeMounts" : [ ]
+          } ],
+          "imagePullSecrets" : [ ],
+          "nodeSelector" : { },
+          "volumes" : [ ]
+        }
+      }
+    }
+  } ],
+  "parameters" : [ ]
+}
