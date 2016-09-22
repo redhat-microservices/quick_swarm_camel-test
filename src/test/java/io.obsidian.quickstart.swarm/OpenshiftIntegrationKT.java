@@ -1,5 +1,6 @@
-package io.fabric8.quickstarts.swarm;
+package io.obsidian.quickstart.swarm;
 
+import io.fabric8.arquillian.kubernetes.Session;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import okhttp3.OkHttpClient;
@@ -23,6 +24,9 @@ public class OpenshiftIntegrationKT {
     @ArquillianResource
     KubernetesClient client;
 
+    @ArquillianResource
+    Session session;
+
     OkHttpClient httpClient = new OkHttpClient();
 
     @Test
@@ -37,7 +41,7 @@ public class OpenshiftIntegrationKT {
         // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)
         assertThat(client).replicas("swarm-camel").pods().isPodReadyForPeriod();
 
-        String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
+        String serviceURL = KubernetesHelper.getServiceURL(client, "swarm-camel", session.getNamespace(), "http", true);
         String req = serviceURL + "/service/say/charles";
         LOG.info("### HTTP Request : " + req);
 
