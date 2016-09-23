@@ -87,7 +87,7 @@ minishift docker-env
 eval $(minishift docker-env)
 ```
 
-Remark : Don't forget to be authenticated with the OpenShift Server using the command `oc login`
+Remark : Don't forget to be authenticated with the OpenShift Server using the command `oc login -u admin -n default`
 
 The example can be built and deployed using a single goal:
 
@@ -113,7 +113,7 @@ Notice: As it depends on your OpenShift setup, the hostname (route) might vary. 
 
 Use this URL to display the response message from the REST service:
 
-    export serviceURL=$(minishift service swarm-camel --url=true)
+    export serviceURL=$(minishift service swarm-camel --url=true -n swarm-demo)
     curl $serviceURL/service/say/charles
 
 ## Testing
@@ -147,6 +147,8 @@ public void testHttpEndpoint() throws Exception {
     String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
 ```
 
-To run the Junit tests, simply exexute this maven command
+To run the Junit test, simply execute this maven command
 
-    mvn test -Dtest=KubernetesIntegrationKT
+    mvn test -Dtest=OpenshiftIntegrationKT
+    
+Remark : Please verify prior to execute the test that you are logged to OpenShift using the admin user `oc login -u admin -n default`    

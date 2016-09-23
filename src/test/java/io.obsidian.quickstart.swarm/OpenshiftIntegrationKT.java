@@ -1,13 +1,17 @@
 package io.fabric8.quickstarts.swarm;
 
+import io.fabric8.arquillian.kubernetes.Session;
 import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.assertj.core.api.Condition;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,29 +27,31 @@ public class OpenshiftIntegrationKT {
     @ArquillianResource
     KubernetesClient client;
 
-    OkHttpClient httpClient = new OkHttpClient();
+    @ArquillianResource
+    Session session;
 
     @Test
-    public void testAppProvisionsRunningPods() throws Exception {
-        // assert that a Replication Controller exists
-        assertThat(client).replicationController("swarm-camel");
+    public void testReplicationControllerAndServiceExists() throws Exception {
+        LOG.info("## Testing if Replication Controller exists");
+
+        String serviceName = "swarm-camel";
+        assertThat(client).replicationController(serviceName).isNotNull();
+        assertThat(client).hasServicePort(serviceName, 8080);
     }
 
     @Test
-    public void testHttpEndpoint() throws Exception {
+    public void testPod() throws Exception {
+        LOG.info("## Testing Swarm Pod");
+        LOG.info("## Namespace : " + session.getNamespace());
 
-        // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)
-        assertThat(client).replicas("swarm-camel").pods().isPodReadyForPeriod();
-
-        String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
-        String req = serviceURL + "/service/say/charles";
-        LOG.info("### HTTP Request : " + req);
-
-        Request request = new Request.Builder()
-                .url(req)
-                .build();
-
-        Response response = httpClient.newCall(request).execute();
-        Assert.assertEquals("Hello from REST endpoint to charles",response.body().string());
+        assertThat(client).pods()
+                .runningStatus()
+                .filterNamespace(session.getNamespace())
+                .haveAtLeast(1, new Condition<Pod>() {
+                    @Override
+                    public boolean matches(Pod podSchema) {
+                        return true;
+                    }
+                });
     }
 }
