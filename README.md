@@ -171,3 +171,14 @@ To run the Junit test, simply execute this maven command
     mvn test -Dtest=OpenshiftServiceKT
     
 Remark : Please verify prior to execute the test that you are logged to OpenShift using the admin user `oc login -u admin -n default`    
+
+### All the Steps to play with the Quickstart
+
+```
+bin/delete_start_minishift.sh
+eval $(minishift docker-env)
+oc login -u admin -p admin -n default
+bin/deploy.sh
+mvn test -Dtest=OpenshiftIntegrationKT
+mvn test -Dtest=OpenshiftServiceKT
+```
