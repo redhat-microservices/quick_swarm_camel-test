@@ -135,7 +135,25 @@ public void testAppProvisionsRunningPods() throws Exception {
 }
 ```
 
-and to test a HTTP endpoint/service deployed
+or this one for a pod
+
+```java
+    @Test
+    public void testPod() throws Exception {
+
+        assertThat(client).pods()
+                .runningStatus()
+                .filterNamespace(session.getNamespace())
+                .haveAtLeast(1, new Condition<Pod>() {
+                    @Override
+                    public boolean matches(Pod podSchema) {
+                        return true;
+                    }
+                });
+    }
+```
+
+And to test a HTTP endpoint/service deployed
 
 ```java
 @Test
@@ -150,5 +168,6 @@ public void testHttpEndpoint() throws Exception {
 To run the Junit test, simply execute this maven command
 
     mvn test -Dtest=OpenshiftIntegrationKT
+    mvn test -Dtest=OpenshiftServiceKT
     
 Remark : Please verify prior to execute the test that you are logged to OpenShift using the admin user `oc login -u admin -n default`    
