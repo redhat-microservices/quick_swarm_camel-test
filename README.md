@@ -161,7 +161,7 @@ public void testHttpEndpoint() throws Exception {
     // assert that a pod is ready from the RC... It allows to capture also the logs if they barf before trying to invoke services (which may not be ready yet)
     assertThat(client).replicas("swarm-camel").pods().isPodReadyForPeriod();
 
-    // Fech the External Address of the Service
+    // Fetch the External Address of the Service
     String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
 ```
 
@@ -172,13 +172,14 @@ To run the Junit test, simply execute this maven command
     
 Remark : Please verify prior to execute the test that you are logged to OpenShift using the admin user `oc login -u admin -n default`    
 
-### All the Steps to play with the Quickstart
-
+### All the Steps to execute to test Quickstart
+ 
 ```
 bin/delete_start_minishift.sh
+minishift start --deploy-registry=true --deploy-router=true --memory=4048 --vm-driver="xhyve"
 eval $(minishift docker-env)
 oc login -u admin -p admin -n default
-bin/deploy.sh
+mvn -Popenshift-local-deploy
 mvn test -Dtest=OpenshiftIntegrationKT
 mvn test -Dtest=OpenshiftServiceKT
 ```
