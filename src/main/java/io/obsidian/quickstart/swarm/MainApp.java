@@ -31,13 +31,13 @@ public class MainApp {
 
 	public static void main(String[] args) throws Exception {
 
-		Map<String, String> fileSpec = new HashMap<>();
-		fileSpec.put("path","/Users/chmoulli/Temp/log/swarm.log");
-		fileSpec.put("level",Level.INFO.toString());
-		fileSpec.put("formatter","%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
+		Map<String, String> props = new HashMap<>();
+		props.put("path","/Users/chmoulli/Temp/log/swarm.log"); // EMPTY LOG FILE
+		props.put("level",Level.INFO.toString());
+		props.put("formatter","%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
 
 		FileHandler logFile = new FileHandler("swarm-camel");
-		logFile.file(fileSpec);
+		logFile.file(props).enabled(true);
 
 		Swarm container = new Swarm();
 		container.fraction(new JolokiaFraction("/jmx"));
