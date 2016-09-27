@@ -128,6 +128,12 @@
             <artifactId>camel-other</artifactId>
         </dependency>
 
+        <!-- Others -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+
         <!-- Java REST Spec -->
         <dependency>
             <groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -145,11 +151,6 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>fabric8-arquillian</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

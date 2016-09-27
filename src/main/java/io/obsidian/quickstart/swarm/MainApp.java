@@ -17,18 +17,31 @@ package io.obsidian.quickstart.swarm;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.wildfly.swarm.Swarm;
+import org.wildfly.swarm.config.logging.FileHandler;
 import org.wildfly.swarm.config.logging.Level;
+import org.wildfly.swarm.config.logging.LogFile;
 import org.wildfly.swarm.jolokia.JolokiaFraction;
 import org.wildfly.swarm.logging.LoggingFraction;
 import org.wildfly.swarm.undertow.WARArchive;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainApp {
 
 	public static void main(String[] args) throws Exception {
 
+		Map<String, String> fileSpec = new HashMap<>();
+		fileSpec.put("path","/Users/chmoulli/Temp/log/swarm.log");
+		fileSpec.put("level",Level.INFO.toString());
+		fileSpec.put("formatter","%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
+
+		FileHandler logFile = new FileHandler("swarm-camel");
+		logFile.file(fileSpec);
+
 		Swarm container = new Swarm();
 		container.fraction(new JolokiaFraction("/jmx"));
-        container.fraction(new LoggingFraction().fileHandler("wildfly-swarm-camel","/var/log/swarm.log", Level.INFO,"%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"));
+        container.fraction(new LoggingFraction().fileHandler(logFile));
 		container.start();
 
 		WARArchive deployment = ShrinkWrap.create(WARArchive.class);
