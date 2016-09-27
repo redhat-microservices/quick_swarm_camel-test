@@ -21,7 +21,7 @@ The MainApp class is bootstrapped by the WildFly Swarm container when we launch 
 
 ```
 public static void main(String[] args) throws Exception {
-	Container container = new Container();
+	Swarm container = new Swarm();
     container.fraction(new JolokiaFraction("/jmx"));
     container.start();
 

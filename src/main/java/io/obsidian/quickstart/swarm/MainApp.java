@@ -16,7 +16,7 @@
 package io.obsidian.quickstart.swarm;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.wildfly.swarm.container.Container;
+import org.wildfly.swarm.Swarm;
 import org.wildfly.swarm.jolokia.JolokiaFraction;
 import org.wildfly.swarm.undertow.WARArchive;
 
@@ -24,7 +24,7 @@ public class MainApp {
 
 	public static void main(String[] args) throws Exception {
 
-		Container container = new Container();
+		Swarm container = new Swarm();
 		container.fraction(new JolokiaFraction("/jmx"));
 		container.start();
 
