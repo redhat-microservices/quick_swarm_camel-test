@@ -17,7 +17,9 @@ package io.obsidian.quickstart.swarm;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.wildfly.swarm.Swarm;
+import org.wildfly.swarm.config.logging.Level;
 import org.wildfly.swarm.jolokia.JolokiaFraction;
+import org.wildfly.swarm.logging.LoggingFraction;
 import org.wildfly.swarm.undertow.WARArchive;
 
 public class MainApp {
@@ -26,6 +28,7 @@ public class MainApp {
 
 		Swarm container = new Swarm();
 		container.fraction(new JolokiaFraction("/jmx"));
+        container.fraction(new LoggingFraction().fileHandler("wildfly-swarm-camel","/var/log/swarm.log", Level.INFO,"%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"));
 		container.start();
 
 		WARArchive deployment = ShrinkWrap.create(WARArchive.class);
