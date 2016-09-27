@@ -19,30 +19,32 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.wildfly.swarm.Swarm;
 import org.wildfly.swarm.config.logging.FileHandler;
 import org.wildfly.swarm.config.logging.Level;
+import org.wildfly.swarm.jolokia.JolokiaFraction;
 import org.wildfly.swarm.logging.LoggingFraction;
 import org.wildfly.swarm.undertow.WARArchive;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainApp {
 
-	final static String logFile = "/var/log/swarm.log";
+	final static String LOG_FILE = "/var/log/swarm.log";
 
 	public static void main(String[] args) throws Exception {
 
-		Map<String, String> props = new HashMap<>();
-		props.put("path",logFile); // EMPTY LOG FILE
-		props.put("level",Level.INFO.toString());
-		props.put("formatter","%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
-
-		FileHandler logFile = new FileHandler("swarm-camel");
-		logFile.file(props).enabled(true);
-
 		Swarm container = new Swarm();
-		// container.fraction(new JolokiaFraction("/jmx"));
-        container.fraction(new LoggingFraction().fileHandler(logFile));
+		container.fraction(new JolokiaFraction("/jmx"));
+        container.fraction(new LoggingFraction()
+		                       .fileHandler("swarm-camel", f -> {
+
+	                               Map<String, String> fileProps = new HashMap<>();
+	                               fileProps.put("path", LOG_FILE);
+	                               f.file(fileProps);
+	                               f.level(Level.INFO);
+	                               f.formatter("%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
+                               })
+		                       .rootLogger(Level.INFO,"swarm-camel")
+        );
 		container.start();
 
 		WARArchive deployment = ShrinkWrap.create(WARArchive.class);
