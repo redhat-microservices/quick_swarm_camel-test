@@ -107,15 +107,22 @@
 
     <dependencies>
         <!-- Swarm -->
+        <!--
         <dependency>
-            <groupId>org.wildfly.swarm</groupId>
-            <artifactId>jolokia</artifactId>
+             <groupId>org.wildfly.swarm</groupId>
+             <artifactId>jolokia</artifactId>
         </dependency>
+         -->
         <dependency>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>logging</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>undertow</artifactId>
+        </dependency>
+        <!--
+       <dependency>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>camel-undertow</artifactId>
         </dependency>
@@ -127,6 +134,7 @@
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>camel-other</artifactId>
         </dependency>
+        -->
 
         <!-- Others -->
         <dependency>

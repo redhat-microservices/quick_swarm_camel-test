@@ -19,8 +19,6 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.wildfly.swarm.Swarm;
 import org.wildfly.swarm.config.logging.FileHandler;
 import org.wildfly.swarm.config.logging.Level;
-import org.wildfly.swarm.config.logging.LogFile;
-import org.wildfly.swarm.jolokia.JolokiaFraction;
 import org.wildfly.swarm.logging.LoggingFraction;
 import org.wildfly.swarm.undertow.WARArchive;
 
@@ -30,9 +28,7 @@ import java.util.Map;
 
 public class MainApp {
 
-	final static String logFile = System.getProperty("user.dir") + File.separator +
-			"target" + File.separator +
-			"swarm.log";
+	final static String logFile = "/var/log/swarm.log";
 
 	public static void main(String[] args) throws Exception {
 
@@ -45,7 +41,7 @@ public class MainApp {
 		logFile.file(props).enabled(true);
 
 		Swarm container = new Swarm();
-		container.fraction(new JolokiaFraction("/jmx"));
+		// container.fraction(new JolokiaFraction("/jmx"));
         container.fraction(new LoggingFraction().fileHandler(logFile));
 		container.start();
 
