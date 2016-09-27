@@ -147,6 +147,9 @@ public void testHttpEndpoint() throws Exception {
     String serviceURL = KubernetesHelper.getServiceURL(client,"swarm-camel",KubernetesHelper.DEFAULT_NAMESPACE,"http",true);
 ```
 
-To run the Junit tests, simply exexute this maven command
+To run the Junit tests, simply execute this maven command
 
-    mvn test -Dtest=KubernetesIntegrationKT
+    mvn test -Dtest=OpenshiftIntegrationKT
+    mvn test -Dtest=ServiceIntegrationKT
+    
+Remark : Be sure that you are still connected to the Openshift platform & log on again if required `oc login -u admin -p admin`   
