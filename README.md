@@ -32,6 +32,25 @@ public static void main(String[] args) throws Exception {
     container.deploy(deployment);
 ```
 
+To configure the logging appender responsible to collect the logs, we will add the Logging Fraction and define it as such
+
+```
+container.fraction(new LoggingFraction()
+		                       .fileHandler("swarm-camel", f -> {
+
+	                               Map<String, String> fileProps = new HashMap<>();
+	                               fileProps.put("path", LOG_FILE);
+	                               f.file(fileProps);
+	                               f.level(Level.INFO);
+	                               f.formatter("%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
+                               })
+		                       .rootLogger(Level.INFO,"swarm-camel")
+        );
+```
+
+A FileHandler is defined with the name of the Logging file, the logging level and the format to be used to save the informations. To configure the Logging Api
+to use this appender for the root logger, we have also configured the rootLogger field with the id of the fileHandler created.
+
 ## Build
 
 You will need to compile this example first:
@@ -104,6 +123,9 @@ Then find the name of the pod that runs this quickstart, and output the logs fro
     oc logs <name of pod>
 
 You can also use the OpenShift web console to manage the running pods, and view logs and much more.
+
+As we have mounted a Kubernetes Volume between the host and the linux container, you can also consult the content of the WildFly Swarm log file `/var/log/swarm.log` if you ssh to the
+virtual machine. If you use minishift, simply run this command `minishift ssh` to access it.
 
 ## Access services using a web browser
 
