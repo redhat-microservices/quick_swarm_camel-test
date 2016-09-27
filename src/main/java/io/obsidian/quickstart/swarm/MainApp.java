@@ -24,15 +24,20 @@ import org.wildfly.swarm.jolokia.JolokiaFraction;
 import org.wildfly.swarm.logging.LoggingFraction;
 import org.wildfly.swarm.undertow.WARArchive;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainApp {
 
+	final static String logFile = System.getProperty("user.dir") + File.separator +
+			"target" + File.separator +
+			"swarm.log";
+
 	public static void main(String[] args) throws Exception {
 
 		Map<String, String> props = new HashMap<>();
-		props.put("path","/Users/chmoulli/Temp/log/swarm.log"); // EMPTY LOG FILE
+		props.put("path",logFile); // EMPTY LOG FILE
 		props.put("level",Level.INFO.toString());
 		props.put("formatter","%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n");
 
